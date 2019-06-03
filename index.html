@@ -28,6 +28,7 @@
             z-index: 999999;
             margin-right: 10px;
         }
+
         /* .cartoon{
             animation: sk-stretchdelay 1.2s infinite ease-in-out;
         }
@@ -46,6 +47,7 @@
         #ZQjfamily>select:focus {
             outline: none;
         }
+
         #ZQjfamily>.ZQjhuakuai {
             border-radius: 25%;
             border-bottom-right-radius: 0;
@@ -76,9 +78,10 @@
         </select>
     </div>
 </body>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> -->
 <script src="./jquery-3.3.1.min.js"></script>
 <script src="./city.js"></script>
+
 <script>
     $(".ZQjhuakuai").css("width", $('.active').css('width'));
     $('#ZQjfamily').on('mouseenter', 'select', function (e) {
@@ -97,6 +100,7 @@
     })
     var information = null
     var cityList = null
+    var cityIndex = null
     $.getJSON('./sanji.json', function (data) {
         information = data
         $.each(data, function (index, value) {
@@ -108,9 +112,14 @@
         })
     })
     $('#provinceZQj').change(function () {
+        $('#cityZQJ').html()
+        $('#cityZQJ').html('<option disabled selected>请先选择省</option>')
+        $('#districtZQJ').html()
+        $('#districtZQJ').html('<option disabled selected>请先选择省和城市</option>')
         $('#cityZQJ>option').remove(0)
-        const cityIndex = $(this).children("option:selected").attr('data-index')
-        cityList = information[cityIndex]['child']
+        const provinceIndex = $(this).children("option:selected").attr('data-index')
+        cityList = information[provinceIndex]['child']
+        console.log(cityList);
         $.each(cityList, function (index, value) {
             var cityZQJ = document.createElement('option')
             $(cityZQJ).text(value.value)
@@ -118,13 +127,23 @@
             $(cityZQJ).attr('data-index', index)
             $('#cityZQJ').append(cityZQJ)
         })
+        cityIndex = $('#cityZQJ').children("option:selected").attr('data-index')
+        var districtList = cityList[cityIndex]['child']
+        $('#districtZQJ>option').remove(0)
+        $.each(districtList, function (index, value) {
+            var districtZQJ = document.createElement('option')
+            $(districtZQJ).text(value.value)
+            $(districtZQJ).val(value.value)
+            console.log(districtZQJ);
+            $('#districtZQJ').append(districtZQJ)
+        })
     })
     $('#cityZQJ').change(function () {
+        $('#districtZQJ').html()
+        $('#districtZQJ').html('<option disabled selected>请先选择省和城市</option>')
         $('#districtZQJ>option').remove(0)
-        const cityIndex = $(this).children("option:selected").attr('data-index')
-        // console.log(cityList);
+        cityIndex = $(this).children("option:selected").attr('data-index')
         var districtList = cityList[cityIndex]['child']
-        // console.log(districtList);
         $.each(districtList, function (index, value) {
             var districtZQJ = document.createElement('option')
             $(districtZQJ).text(value.value)
