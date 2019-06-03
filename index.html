@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        #ZQjfamily {
+            position: relative;
+            display: flex;
+            /* float: left; */
+        }
+
+        #ZQjfamily>select {
+            display: block;
+            padding: 10px 54px;
+            border-radius: 25%;
+            background-color: rgb(0, 0, 0, 0);
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            z-index: 999999;
+            margin-right: 10px;
+        }
+        /* .cartoon{
+            animation: sk-stretchdelay 1.2s infinite ease-in-out;
+        }
+        @keyframes sk-stretchdelay {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        } */
+
+        #ZQjfamily>select:focus {
+            outline: none;
+        }
+        #ZQjfamily>.ZQjhuakuai {
+            border-radius: 25%;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            width: 1px;
+            height: 39px;
+            position: absolute;
+            background-color: rgb(152, 183, 85);
+            left: 0px;
+            transition: all .5s linear;
+            top: 1px;
+            z-index: 99;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="ZQjfamily">
+        <div class="ZQjhuakuai"></div>
+        <select name="" class="active" id="provinceZQj">
+            <option data-index="moren">请选择省</option>
+        </select>
+        <select name="" id="cityZQJ">
+            <option disabled selected>请先选择省</option>
+        </select>
+        <select name="" id="districtZQJ">
+            <option disabled selected>请先选择省和城市</option>
+        </select>
+    </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="./jquery-3.3.1.min.js"></script>
+<script src="./city.js"></script>
+<script>
+    $(".ZQjhuakuai").css("width", $('.active').css('width'));
+    $('#ZQjfamily').on('mouseenter', 'select', function (e) {
+        $('.ZQjhuakuai').css("left", e.currentTarget.offsetLeft + "px");
+        $('.ZQjhuakuai').css("width", $(this).css("width"))
+    })
+    $('#ZQjfamily').on('mouseleave', 'select', function (e) {
+        $(".ZQjhuakuai").css("left", $('.active')[0].offsetLeft + "px");
+        $('.ZQjhuakuai').css("width", $('.active').css('width'))
+    })
+    $("#ZQjfamily").on("click", 'select', function (e) {
+        $("select").removeClass("active");
+        $(this).addClass("active");
+        $('.ZQjhuakuai').css("width", $(this).css("width"))
+        $(".ZQjhuakuai").css("left", e.currentTarget.offsetLeft + "px");
+    })
+    var information = null
+    var cityList = null
+    $.getJSON('./sanji.json', function (data) {
+        information = data
+        $.each(data, function (index, value) {
+            var provinceZQj = document.createElement('option')
+            $(provinceZQj).text(value.value)
+            $(provinceZQj).val(value.value)
+            $(provinceZQj).attr('data-index', index)
+            $('#provinceZQj').append(provinceZQj)
+        })
+    })
+    $('#provinceZQj').change(function () {
+        $('#cityZQJ>option').remove(0)
+        const cityIndex = $(this).children("option:selected").attr('data-index')
+        cityList = information[cityIndex]['child']
+        $.each(cityList, function (index, value) {
+            var cityZQJ = document.createElement('option')
+            $(cityZQJ).text(value.value)
+            $(cityZQJ).val(value.value)
+            $(cityZQJ).attr('data-index', index)
+            $('#cityZQJ').append(cityZQJ)
+        })
+    })
+    $('#cityZQJ').change(function () {
+        $('#districtZQJ>option').remove(0)
+        const cityIndex = $(this).children("option:selected").attr('data-index')
+        // console.log(cityList);
+        var districtList = cityList[cityIndex]['child']
+        // console.log(districtList);
+        $.each(districtList, function (index, value) {
+            var districtZQJ = document.createElement('option')
+            $(districtZQJ).text(value.value)
+            $(districtZQJ).val(value.value)
+            $('#districtZQJ').append(districtZQJ)
+        })
+    })
+</script>
+
+</html>
